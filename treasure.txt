@@ -1,1 +1,1 @@
-[{"todoText":"Complete Assignment","priority":"High"},{"todoText":"Get groceries","priority":"Low"}]
+[{"todoText":"First task"},{"todoText":"Second task"},{"todoText":"Third task"}]

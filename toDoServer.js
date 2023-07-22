@@ -3,8 +3,9 @@ const fs = require('fs');
 
 const app = express();
 
-app.use(express.json())              //middleware: since it is global so it works before every request
-                                    //gets request and parses it  and adds in inside request by the name body
+app.use(express.json())              //middleware: since it is global so it works before every request gets request and parses it  and adds in inside request by the name body
+app.use(express.static(__dirname+"/toDoViews")) 
+
 app.get("/", function(req, res){
     res.sendFile(__dirname + "/toDoViews/index.html");
 });
@@ -34,9 +35,9 @@ app.get("/todo-data", function(req, res){
 });
 
 
-app.get("/toDoScript.js", function(req, res){
-    res.sendFile(__dirname + "/toDoViews/toDoScript.js");
-});
+//app.get("/toDoScript.js", function(req, res){
+//    res.sendFile(__dirname + "/toDoViews/toDoScript.js");
+//});
 
 
 app.listen(3000, function(){
