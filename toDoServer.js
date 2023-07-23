@@ -3,78 +3,122 @@ const fs = require('fs');
 
 const app = express();
 
-app.use(express.json())              //middleware: since it is global so it works before every request gets request and parses it  and adds in inside request by the name body
-app.use(express.static(__dirname+"/toDoViews")) 
+app.use(express.json());
+app.use(express.static(__dirname + "/toDoViews"));
 
-app.get("/", function(req, res){
+app.get("/", function (req, res) {
     res.sendFile(__dirname + "/toDoViews/index.html");
 });
 
-
-app.post("/todo", function(req, res){           
-    //console.log(req.body);
-    saveToDoInFile(req.body, function(err){
-        if(err){
+app.post("/todo", function (req, res) {
+    saveToDoInFile(req.body, function (err) {
+        if (err) {
             res.status(500).send('error');
-            retrun;
+            return;
         }
 
         res.status(200).send("success");
-    })
+    });
 });
 
-app.get("/todo-data", function(req, res){
-    readAllToDos(function(err,data){
-        if(err){
-        res.status(500).send("error");
-        return;
-    }
-    res.status(200).json(data);
-    //res.status(200).send(JSON.stringify(data));
+app.get("/todo-data", function (req, res) {
+    readAllToDos(function (err, data) {
+        if (err) {
+            res.status(500).send("error");
+            return;
+        }
+        res.status(200).json(data);
+    });
+});
+
+app.put("/todo/:id", function (req, res) {
+    const todoId = req.params.id;
+    const updatedTodo = req.body;
+
+    readAllToDos(function (err, data) {
+        if (err) {
+            res.status(500).send("error");
+            return;
+        }
+
+        const updatedData = data.map(todo => {
+            if (todo.id === todoId) {
+                return { ...todo, ...updatedTodo };
+            }
+            return todo;
+        });
+
+        fs.writeFile("./treasure.txt", JSON.stringify(updatedData), function (err) {
+            if (err) {
+                res.status(500).send("error");
+                return;
+            }
+
+            res.status(200).json({
+                message: "ToDo updated successfully!"
+            });
+        });
     });
 });
 
 
-//app.get("/toDoScript.js", function(req, res){
-//    res.sendFile(__dirname + "/toDoViews/toDoScript.js");
-//});
+app.delete("/todo/:id", function (req, res) {
+    const todoId = req.params.id;
 
+    readAllToDos(function (err, data) {
+        if (err) {
+            res.status(500).send("error");
+            return;
+        }
 
-app.listen(3000, function(){
+        const updatedData = data.filter(todo => todo.id !== todoId);
+
+        fs.writeFile("./treasure.txt", JSON.stringify(updatedData), function (err) {
+            if (err) {
+                res.status(500).send("error");
+                return;
+            }
+
+            res.status(200).json({
+                message: "ToDo deleted successfully!"
+            });
+        });
+    });
+});
+
+app.listen(3000, function () {
     console.log("successful");
 });
 
-
-function readAllToDos(callback){
-    fs.readFile("./treasure.txt", "utf-8", function(err, data){
-        if(err){
+function readAllToDos(callback) {
+    fs.readFile("./treasure.txt", "utf-8", function (err, data) {
+        if (err) {
             callback(err);
             return;
         }
-        if(data.length===0){
-            data="[]";
+        if (data.length === 0) {
+            data = "[]";
         }
-        try{
+        try {
             data = JSON.parse(data);
             callback(null, data);
-        }catch(err){
+        } catch (err) {
             callback(err);
         }
     });
 }
 
-function saveToDoInFile(todo, callback){
-
-    readAllToDos(function(err, data){
-        if(err){
+function saveToDoInFile(todo, callback) {
+    readAllToDos(function (err, data) {
+        if (err) {
             callback(err);
             return;
         }
 
         data.push(todo);
- 
-        fs.writeFile("./treasure.txt", JSON.stringify(data), function(err){
-            if(err){
+
+        fs.writeFile("./treasure.txt", JSON.stringify(data), function (err) {
+            if (err) {
                 callback(err);
                 return;
             }
@@ -82,40 +126,4 @@ function saveToDoInFile(todo, callback){
             callback(null);
         });
     });
-} 
-/**
- * 
- * fs.readFile("./treasure.mp4", "utf-8", function(err, data){
-        if(err){
-            res.status(500).json({
-                massage:"Internal server error";
-            });
-            return;
-        }
-
-        if(data.length===0){
-            data="[]";
-        }
-        try{
-            data = JSON.parser(data);
-            data.push(req.body);
-
-            fs.writeFile("./treasure.mp4", JSON.stringify(data), function(req, res){
-                if(err){
-                    res.status(500).json({
-                        message: "Internal  server error"
-                    });
-                    return;
-                }
-                res.status(200).json({
-                    message: "ToDo saved successfully!"
-                });
-            });
-        }
-        catch(err){
-            res.status(500).json({
-                massage:"Internal server error";
-            });
-        }
-    })
- */
+}
