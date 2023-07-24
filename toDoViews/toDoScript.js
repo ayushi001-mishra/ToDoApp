@@ -12,13 +12,6 @@ for (i = 0; i < close.length; i++) {
   }
 }
 
-var list = document.querySelector('ul');
-list.addEventListener('click', function(ev) {
-  if (ev.target.tagName === 'LI') {
-    ev.target.classList.toggle('checked');
-  }
-}, false);
-
 userInput.addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
     document.getElementById("submitToDo").click();
@@ -65,14 +58,16 @@ submit.addEventListener("click", function () {
 
 function showToDoInUI(todo) {
   var li = document.createElement("li");
-
+  li.className="liclass";
   var checkbox = document.createElement("input");
   checkbox.type = "checkbox";
+  checkbox.className="checkclass";
   checkbox.checked = todo.complete; 
-  li.appendChild(checkbox);
+ 
 
   var t = document.createTextNode(todo.todoText);
   li.appendChild(t);
+  li.appendChild(checkbox);
   document.getElementById("todo-item").appendChild(li);
   document.getElementById("task").value = "";
 
@@ -95,6 +90,14 @@ function showToDoInUI(todo) {
 
  
   checkbox.addEventListener("change", function () {
+    if(todo.complete===false){
+      var list= this.parentElement;
+      list.style.textDecoration = "line-through";
+    }
+    else{
+      var list= this.parentElement;
+      list.style.textDecoration = "none";
+    }
     updateToDoInUI(todo, li, checkbox.checked); 
   });
 }
