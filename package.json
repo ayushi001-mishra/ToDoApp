@@ -1,5 +1,5 @@
 {
-  "name": "todo",
+  "name": "todoapp-submitted",
   "version": "1.0.0",
   "description": "",
   "main": "toDoServer.js",
@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "nodemon": "^3.0.1"
   }
 }
