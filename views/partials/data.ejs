@@ -1,0 +1,12 @@
+<% if (data) { %>
+    <h3>Data from data.json:</h3>
+    <% for (let i = 0; i < data.length; i++) { %>
+        <li>
+            <strong>Name:</strong> <%= data[i].username %>,
+            <strong>Email:</strong> <%= data[i].email %>,
+        </li>
+    <% } %>
+</ul>
+<% } else { %>
+    <p>No data found.</p>
+<% } %>

@@ -4,6 +4,8 @@ var session = require('express-session');
 
 const app = express();
 
+app.set("view engine", "ejs");
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/toDoViews"));
@@ -14,40 +16,75 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
 }));
-  
-let users = [];
-if (fs.existsSync('users.json')) {
-    userDetails(function (err, data) {
-        if (err) {
-            res.status(200).send("error")
-            return;
-        }
-        users = data;
-})}
 
-function userDetails(callback) {
-    fs.readFile("./users.json", "utf-8", function (err, data) {
-        if (err) {
-            callback(err);
-            return;
-        }
-        if (data.length === 0) {
-            data = "[]";
-        }
-        try {
-            data = JSON.parse(data);
-            callback(null, data);
-        } catch (err) {
-            callback(err);
-        }
-    });
-}
+// Load user data from JSON file
+ let users = [];
+fs.readFile('users.json', 'utf8', (err, data) => {
+     if (!err) {
+            if (data.length === 0) {
+                data = "[]";
+            }
+         users = JSON.parse(data);
+     }
+ });
+
+
+// let users = [];
+// if (fs.existsSync('users.json')) {
+//     userDetails(function (err, data) {
+//         if (err) {
+//             res.status(200).send("error")
+//             return;
+//         }
+//         users = data;
+// })}
+
+// function userDetails(callback) {
+//     fs.readFile("./users.json", "utf-8", function (err, data) {
+//         if (err) {
+//             callback(err);
+//             return;
+//         }
+//         if (data.length === 0) {
+//             data = "[]";
+//         }
+//         try {
+//             data = JSON.parse(data);
+//             callback(null, data);
+//         } catch (err) {
+//             callback(err);
+//         }
+//     });
+// }
+
+
+// Middleware to add loggedInUser to all templates
+app.use((req, res, next) => {
+    res.locals.loggedInUser = req.session.loggedInUser ? req.session.loggedInUser.username : null;
+    next();
+});
+
 app.get("/home", function(req, res){
-    if(!req.session.isLoggedIn){
-        res.redirect("/login");
-        return;
+    if (req.session.loggedInUser) {
+        fs.readFile('users.json', 'utf8', (err, data) => {
+            if (!err) {
+                const templateData = {
+                    loggedInUser: req.session.loggedInUser.username,
+                    data: JSON.parse(data) // Pass the data from users.json as a variable
+                };
+                res.render('home', templateData);
+            } else {
+                res.status(500).send('Error reading data from data.json.');
+            }
+        });
+    } else {
+        res.redirect('/login');
     }
-      res.sendFile(__dirname + "/toDoViews/home.html");
+    // if(!req.session.isLoggedIn){
+    //     res.redirect("/login");
+    //     return;
+    // }
+    //   res.render("home", {username: req.session.loggedInUser.username});
 })
 
 app.get("/todos", function (req, res) {
@@ -55,7 +92,7 @@ app.get("/todos", function (req, res) {
         res.redirect("/login");
         return;
     }
-    res.sendFile(__dirname + "/toDoViews/index.html");
+    res.render("todo");
 });
 
 app.get("/about", function (req, res) {
@@ -63,7 +100,7 @@ app.get("/about", function (req, res) {
         res.redirect("/login");
         return;
     }
-    res.sendFile(__dirname + "/toDoViews/about.html");
+    res.render("about");
 });
   
 app.get("/contact", function (req, res) {
@@ -71,7 +108,7 @@ app.get("/contact", function (req, res) {
         res.redirect("/login");
         return;
     }
-    res.sendFile(__dirname + "/toDoViews/contact.html");
+    res.render("contact");
 });
   
 
@@ -194,7 +231,7 @@ function saveToDoInFile(todo, callback) {
 
 // Authentication
 app.get("/login", function(req, res){
-    res.sendFile(__dirname+"/toDoViews/login.html");
+    res.render("index", {error: null});
 })
 
 
@@ -209,18 +246,23 @@ app.post('/login', (req, res) => {
     req.session.loggedInUser = user;
     res.redirect('/home');
   } else {
-    res.redirect('/login-error');
+    res.render("index", {error : "Invalid email or password"});
   }
 });
 
+app.get("/signup", function (req, res) {
+    res.render("signup");
+});
+
 app.post('/create-account', (req, res) => {
+  const username=req.body.username;
   const email=req.body.email;
   const password=req.body.password;
 
   if (users.some(u => u.email === email)) {
     res.send('An account with this email already exists. Please use a different email.');
   } else {
-    const newUser = { email, password };
+    const newUser = { username, email, password };
     users.push(newUser);
     fs.writeFileSync('users.json', JSON.stringify(users));
     res.redirect('/login');

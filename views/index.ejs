@@ -1,16 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Login</title>
     <style>
-       body, html {
+        body, html {
             background-color: #A1CCD1;
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
         }
+        
+        h2{
+        text-align: center;
+        } 
 
         .container {
             max-width: 400px;
@@ -25,7 +28,6 @@
         }
 
         input[type="text"],
-        input[type="email"],
         input[type="password"] {
             padding: 10px;
             font-size: 16px;
@@ -50,20 +52,24 @@
 </head>
 <body>
     <div class="container">
-        <h2>Create an Account</h2>
-        <form id="signup-form" action="create-account" method="post">
-
+        <h2>Login</h2>
+        <form id="login-form" action="/login" method="post">
             <label for="username">Name:</label>
             <input type="text" id="username" name="username" required>
 
             <label for="email">Email Address:</label>
-            <input type="email" id="email" name="email" required>
+            <input type="text" id="email" name="email" required>
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
+            
+            <% if(error) { %>
+                <p style="color:red"><%= error %></p>
+            <% } %>
 
-            <button type="submit">Sign Up</button>
+            <button type="submit">Log In</button>
         </form>
+        <p>Don't have an account? <a href="/signup">Sign Up</a></p>
     </div>
 </body>
 </html>
