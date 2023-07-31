@@ -40,9 +40,6 @@
     margin-bottom: 10px;
     font-size: 16px;
   }
-  button[type="submit"] {
-      display: none;
-  }
  
   * {
     box-sizing: border-box;
@@ -109,6 +106,20 @@
     color: white;
   }
 
+  .checkclass{
+    position: absolute;
+    right: 50px;
+    top: 15px;
+    padding: 12px 16px 12px 16px;
+  }
+  
+  img{
+    position: absolute;
+    right: 75px;
+    top: 10px;
+    /* padding: 12px 16px 12px 16px; */
+  }
+  
   .child {
       width: 50%;
       float: left;

@@ -1,73 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <style>
-        body, html {
-            background-color: #A1CCD1;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        
-        h2{
-        text-align: center;
-        } 
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Todo List</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+      <h1>Todo List</h1>
+        <div class="child" style="background-color:#ffe4e1">
+          <h3>Task List</h3>
+          <p>Add your ToDos by typing in the right and pressing enter to add:</p>
+            <ul type="none" class="todo-item" id="todo-item">
 
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        label, input, button {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        button {
-            padding: 10px;
-            font-size: 16px;
-            background-color: #4682A9;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #3d5a80;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Login</h2>
-        <form id="login-form" action="/login" method="post">
-
-            <label for="username">Name:</label>
-            <input type="text" id="username" name="username" required>
-
-            <label for="email">Email Address:</label>
-            <input type="text" id="email" name="email" required>
-
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-
-            <button type="submit">Log In</button>
+            </ul>
+          </div>
+          <div class="child">
+        <form action="/todo" method="post" enctype="multipart/form-data">
+              <input type="text" id="task" name="task" placeholder="I need to..." />
+              <input type="file" id="task-image" name="task-image"  />
+              <button type="submit" id="submitToDo" >Add Task</button>
         </form>
-        <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
-    </div>
-</body>
+      </div>
+  </body>
+<script src="toDoScript.js"></script>
 </html>

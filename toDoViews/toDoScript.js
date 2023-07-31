@@ -1,81 +1,33 @@
-const submit = document.getElementById("submitToDo");
-const userInput = document.getElementById("task");
-const todoListNode = document.getElementById("todo-item");
-
-
-var close = document.getElementsByClassName("close");
-var i;
-for (i = 0; i < close.length; i++) {
-  close[i].onclick = function() {
-    var div = this.parentElement;
-    div.style.display = "none";
-  }
-}
-
-userInput.addEventListener("keypress", function(event) {
-  if (event.key === "Enter") {
-    document.getElementById("submitToDo").click();
-  }
-});
-
-
-submit.addEventListener("click", function () {
-  const todoText = userInput.value;
-
-  if (!todoText) {
-    alert("Please enter a todo:");
-    return;
-  }
-  function generateId() {
-
-    return Math.random().toString(36).substr(2, 9);
-  }
-  const todo = {
-    todoText: todoText,
-    complete: false,
-    id: generateId(),
-  };
-
-  fetch("/todo", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(todo),
-  })
-    .then(function (response) {
-      if (response.status === 200) {
-        showToDoInUI(todo);
-        todosData.push(todo); 
-      } else {
-        alert("Something went wrong!");
-      }
-    })
-    .catch(function (error) {
-      console.error("Error occurred while adding the todo:", error);
-    });
-});
-
 function showToDoInUI(todo) {
   var li = document.createElement("li");
   li.className="liclass";
+
+  var t = document.createTextNode(todo.todoText);
+  li.appendChild(t);
+
+  var span1 = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  span1.className = "close";
+  span1.appendChild(txt);
+  li.appendChild(span1);
+
+
   var checkbox = document.createElement("input");
   checkbox.type = "checkbox";
   checkbox.className="checkclass";
   checkbox.checked = todo.complete; 
  
+  var span2 = document.createElement("SPAN");
+  span2.appendChild(checkbox);
+  li.appendChild(span2);
 
-  var t = document.createTextNode(todo.todoText);
-  li.appendChild(t);
-  li.appendChild(checkbox);
+  var pic = new Image(25, 25);
+  pic.src=todo.image;
+  li.appendChild(pic);
+
   document.getElementById("todo-item").appendChild(li);
   document.getElementById("task").value = "";
-
-  var span = document.createElement("SPAN");
-  var txt = document.createTextNode("\u00D7");
-  span.className = "close";
-  span.appendChild(txt);
-  li.appendChild(span);
+  document.getElementById("task-image").value = "";
 
   for (i = 0; i < close.length; i++) {
     close[i].onclick = function () {
@@ -84,28 +36,35 @@ function showToDoInUI(todo) {
     };
   }
 
-  span.addEventListener("click", function () {
+  span1.addEventListener("click", function () {
     deleteToDoInUI(todo, li); 
   });
 
- 
+  if(todo.complete===true){
+    var list= checkbox.parentElement.parentElement;
+    list.style.textDecoration = "line-through";
+  }
+  else{
+    var list= checkbox.parentElement.parentElement;
+    list.style.textDecoration = "none";
+  }
+
   checkbox.addEventListener("change", function () {
     if(todo.complete===false){
-      var list= this.parentElement;
+      var list= checkbox.parentElement.parentElement;
       list.style.textDecoration = "line-through";
     }
     else{
-      var list= this.parentElement;
+      var list= checkbox.parentElement.parentElement;
       list.style.textDecoration = "none";
     }
-    updateToDoInUI(todo, li, checkbox.checked); 
+    updateToDoInUI(todo, li, !todo.complete); 
   });
 }
 
 function updateToDoInUI(todo, li, isComplete) {
   todo.complete = isComplete; 
 
- 
   fetch(`/todo/${todo.id}`, {
     method: "PUT",
     headers: {
