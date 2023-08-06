@@ -65,7 +65,7 @@ function showToDoInUI(todo) {
 function updateToDoInUI(todo, li, isComplete) {
   todo.complete = isComplete; 
 
-  fetch(`/todo/${todo.id}`, {
+  fetch(`/todo/${todo._id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -83,13 +83,13 @@ function updateToDoInUI(todo, li, isComplete) {
 }
 
 function deleteToDoInUI(todo, li) {
-  fetch(`/todo/${todo.id}`, {
+  fetch(`/todo/${todo._id}`, {
     method: "DELETE",
   })
     .then(function (response) {
       if (response.status === 200) {
        
-        todosData = todosData.filter((item) => item.id !== todo.id);
+        todosData = todosData.filter((item) => item._id !== todo._id);
         li.style.display = "none"; 
       } else {
         alert("Something went wrong while deleting the todo!");
